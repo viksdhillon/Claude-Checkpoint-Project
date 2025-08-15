@@ -42,7 +42,7 @@ class LinkedList:
             if message in curr.message:
                 return curr.position
             curr = curr.next
-            
+
         if message in self.back:
             return self.back.position
         else:

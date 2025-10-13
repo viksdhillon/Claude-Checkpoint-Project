@@ -1,12 +1,10 @@
 from ollama import chat
 from ollama import ChatResponse
+from checkpoint_structure import CheckpointADT
+from save_query import SaveQuery
 
-response: ChatResponse = chat(model='llama3.2:1b', messages=[
-  {
-    'role': 'user',
-    'content': '6x^2 + 11x - 10',
-  },
-])
-print(response['message']['content'])
-# or access fields directly from the response object
-print(response.message.content)
+checkpoint = CheckpointADT()
+new_query = SaveQuery("checkpoint_save.json")
+new_query.prompt_and_save('Factor the polynomial 6x^2 + 11x - 10. Give me the answer like for example (3x + 5)(6x + 2). Please write each step out distinctively as STEP 1: ..., STEP 2: ..., etc', checkpoint)
+#print(checkpoint.get(1))
+print(checkpoint.toString())

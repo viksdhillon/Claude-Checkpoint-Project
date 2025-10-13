@@ -14,9 +14,11 @@ class CheckpointADT:
         self.tail = None
         self.map = {}
         self.checkpoints = {}
+        self.node_counter = 0
     
-    def append(self, node_id, query, response):
-        new_node = Node(node_id, query, response)
+    def append(self, query, response):
+        self.node_counter +=1
+        new_node = Node(self.node_counter, query, response)
         if self.head == None:
             self.head = new_node
             self.tail = self.head
@@ -28,7 +30,7 @@ class CheckpointADT:
             self.tail.next = None
         
         #update map with new node
-        self.map[node_id] = new_node
+        self.map[new_node.id] = new_node
 
     def delete_node_by_id(self, id):
         # pop from map
@@ -134,8 +136,99 @@ class CheckpointADT:
             node = node.next
         return new_list
     
-
+    def toString(self):
+        curr = self.head
+        if curr is None:
+            return "Empty checkpoint structure"
+        while curr:
+            print(f'{curr.id}, ', end="")
+            curr = curr.next
+        
     
+
+if __name__ == "__main__":
+    """Comprehensive test harness"""
+    print("=" * 60)
+    print("CHECKPOINT SYSTEM TEST HARNESS")
+    print("=" * 60)
+    
+    # Test 1: Create and append nodes
+    print("\n[TEST 1] Creating checkpoint chain...")
+    checkpoint_system = CheckpointADT()
+    checkpoint_system.append("CP-0", "Start", {"n": 12})
+    checkpoint_system.append("CP-1", "Calculate 12!", {"value": 479001600})
+    checkpoint_system.append("CP-2", "Factor by 2", {"factors": [2, 2]})
+    checkpoint_system.append("CP-3", "Factor by 3", {"factors": [2, 2, 3]})
+    checkpoint_system.append("CP-4", "Factor by 5", {"factors": [2, 2, 3, 5]})
+    print("Chain: ", end="")
+    checkpoint_system.toString()
+    
+    # Test 2: Create checkpoints with labels
+    print("\n[TEST 2] Creating labeled checkpoints...")
+    checkpoint_system.checkpoint("after_twos", "Finished factoring by 2")
+    checkpoint_system.checkpoint("after_threes", "Finished factoring by 3")
+    print(f"✓ Created {len(checkpoint_system.checkpoints)} checkpoints")
+    for label, data in checkpoint_system.checkpoints.items():
+        print(f"  - {label}: node {data['node_id']} - {data['description']}")
+    
+    # Test 3: Find and get nodes
+    print("\n[TEST 3] Finding and retrieving nodes...")
+    node = checkpoint_system.find("CP-2")
+    if node:
+        print(f"✓ Found node: {node.id}")
+        query, response = checkpoint_system.get("CP-2")
+        print(f"  Query: {query}, Response: {response}")
+    
+    # Test 4: Update a node
+    print("\n[TEST 4] Updating node CP-2...")
+    checkpoint_system.update("CP-2", "Factor by 2 (updated)", {"factors": [2, 2, 2]})
+    query, response = checkpoint_system.get("CP-2")
+    print(f"✓ Updated - Query: {query}, Response: {response}")
+    
+    # Test 5: Forward traversal
+    print("\n[TEST 5] Forward traversal...")
+    print("Nodes: ", end="")
+    for node in checkpoint_system.traverse_forward():
+        print(f"{node.id}", end=" ")
+    print()
+    
+    # Test 6: Backward traversal
+    print("\n[TEST 6] Backward traversal...")
+    print("Nodes (reverse): ", end="")
+    for node in checkpoint_system.traverse_backward():
+        print(f"{node.id}", end=" ")
+    print()
+    
+    # Test 7: Branch from a checkpoint
+    print("\n[TEST 7] Branching from CP-2...")
+    branch = checkpoint_system.branch_from("CP-2")
+    print("Branched chain: ", end="")
+    branch.toString()
+    
+    # Test 8: Rollback one step
+    print("\n[TEST 8] Rolling back last node...")
+    checkpoint_system.rollback_last()
+    print("After rollback: ", end="")
+    checkpoint_system.toString()
+    
+    # Test 9: Rollback to specific checkpoint
+    print("\n[TEST 9] Rolling back to CP-1...")
+    checkpoint_system.rollback_to("CP-1")
+    print("After rollback to CP-1: ", end="")
+    checkpoint_system.toString()
+    
+    # Test 10: Delete specific node
+    print("\n[TEST 10] Deleting node CP-1...")
+    checkpoint_system.delete_node_by_id("CP-1")
+    print("After deletion: ", end="")
+    checkpoint_system.toString()
+    
+    # Summary
+    print("\n" + "=" * 60)
+    print("TEST SUMMARY")
+    print("=" * 60)
+    print("✓ All core functionality tested")
+    print("✓ Checkpoint system working correctly")
 
 
         

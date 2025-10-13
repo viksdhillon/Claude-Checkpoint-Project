@@ -39,6 +39,11 @@ class CheckpointADT:
         
         #update map with new node
         self.map[new_node.id] = new_node
+        self.data["steps"].append({
+                    "id": self.node_counter,
+                    "response": response
+                })
+        self.update_json()
         return self.node_counter
     def delete_node_by_id(self, id):
         # pop from map
@@ -61,6 +66,9 @@ class CheckpointADT:
         else:
             removed_node.prev.next = removed_node.next
             removed_node.next.prev = removed_node.prev
+        
+        self.data["steps"] = [step for step in self.data["steps"] if step["id"] != id]
+        self.update_json()
         return True
     
     # get node
@@ -75,16 +83,17 @@ class CheckpointADT:
         else:
             return (node.query, node.response)
     
-    #update query and response of a node 
-    def update(self, id, query, response):
+    #update response of a node 
+    def update(self, id, response):
         node = self.find(id)
         if not node:
             return False
         
-        node.query = query
         node.response = response
+        self.data["steps"][id]["response"] = response
+        self.update_json()
         return True
-
+        
      # iterate through list head to tail
     def traverse_forward(self):
         current = self.head
@@ -118,7 +127,6 @@ class CheckpointADT:
             prev = node.prev
             self.delete_node_by_id(node.id)
             node = prev
-            del self.data['steps'][node.id]
         
         if node is None:
             self.head = None
@@ -127,10 +135,6 @@ class CheckpointADT:
         
         self.tail = node
         self.tail.next = None
-        with open(self.log, 'w') as f:
-            json.dump(self.data, f, indent=2)
-            
-        f.close()  
         return True
     
     # rollback to last node
@@ -171,20 +175,24 @@ class CheckpointADT:
         self.data["query"] = query
         for i in steps:
             id = self.append(query, i)
-            if i.strip():
-                self.data["steps"].append({
-                    id: id,
-                    "response": i.strip()
-                })
+            # if i.strip():
+            #     self.data["steps"].append({
+            #         id: id,
+            #         "response": i.strip()
+            #     })
 
-        with open(self.log, 'w') as f:
-            json.dump(self.data, f, indent=2)
+        # with open(self.log, 'w') as f:
+        #     json.dump(self.data, f, indent=2)
         
-        f.close()  
+        # f.close()  
     def scrape_data(self, delim, message):
         steps = message.split(delim)
         return steps
     
+    def update_json(self):
+        with open(self.log, 'w') as f:
+            json.dump(self.data, f, indent=2)
+        f.close()
 
 if __name__ == "__main__":
     """Comprehensive test harness"""

@@ -9,3 +9,7 @@ checkpoint.prompt_and_save('Factor the polynomial 6x^2 + 11x - 10. Give me the a
 print(checkpoint.toString())
 checkpoint.rollback_to(2)
 print(checkpoint.toString())
+checkpoint.append("hi", "This is not the right answer")
+print(checkpoint.toString())
+checkpoint.delete_node_by_id(1)
+print(checkpoint.toString())

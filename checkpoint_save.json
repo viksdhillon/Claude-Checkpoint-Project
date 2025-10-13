@@ -2,12 +2,12 @@
   "query": "Factor the polynomial 6x^2 + 11x - 10. Give me the answer like for example (3x + 5)(6x + 2). Please write each step out distinctively as STEP 1: ..., STEP 2: ..., etc. YOU *MUST* write it out in steps.",
   "steps": [
     {
-      "1": 1,
-      "response": "Here's the factoring of the polynomial 6x^2 + 11x - 10:"
+      "id": 2,
+      "response": " 1: Check if there are any common factors among the terms\nIn this case, we can see that all three terms have a factor of 1, so there are no common factors to eliminate.\n\n "
     },
     {
-      "2": 2,
-      "response": "1: First, we need to find two numbers whose product is the constant term (-10) and whose sum is the coefficient of the middle term (11). These numbers are 10 and 1."
+      "id": 7,
+      "response": "This is not the right answer"
     }
   ]
 }

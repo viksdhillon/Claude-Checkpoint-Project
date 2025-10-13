@@ -1,4 +1,7 @@
 import datetime
+from ollama import chat
+from ollama import ChatResponse
+import json
 
 class Node:
     def __init__(self, node_id, query, response):
@@ -9,12 +12,17 @@ class Node:
         self.prev = None
     
 class CheckpointADT:
-    def __init__(self):
+    def __init__(self, log="checkpoint_save.json"):
         self.head = None
         self.tail = None
         self.map = {}
         self.checkpoints = {}
         self.node_counter = 0
+        self.log = log
+        self.data = {
+            "query": "",
+            "steps": []
+        }
     
     def append(self, query, response):
         self.node_counter +=1
@@ -31,7 +39,7 @@ class CheckpointADT:
         
         #update map with new node
         self.map[new_node.id] = new_node
-
+        return self.node_counter
     def delete_node_by_id(self, id):
         # pop from map
         removed_node = self.map.pop(id, None)
@@ -110,6 +118,7 @@ class CheckpointADT:
             prev = node.prev
             self.delete_node_by_id(node.id)
             node = prev
+            del self.data['steps'][node.id]
         
         if node is None:
             self.head = None
@@ -118,6 +127,10 @@ class CheckpointADT:
         
         self.tail = node
         self.tail.next = None
+        with open(self.log, 'w') as f:
+            json.dump(self.data, f, indent=2)
+            
+        f.close()  
         return True
     
     # rollback to last node
@@ -144,6 +157,33 @@ class CheckpointADT:
             print(f'{curr.id}, ', end="")
             curr = curr.next
         
+    
+    #json formatting
+    def prompt_and_save(self, query, delim):
+        response: ChatResponse = chat(model='llama3.2:1b', messages=[
+            {
+                'role': 'user',
+                'content': query,
+            },
+        ])
+        steps = self.scrape_data(delim, response.message.content)
+        print(response.message.content)
+        self.data["query"] = query
+        for i in steps:
+            id = self.append(query, i)
+            if i.strip():
+                self.data["steps"].append({
+                    id: id,
+                    "response": i.strip()
+                })
+
+        with open(self.log, 'w') as f:
+            json.dump(self.data, f, indent=2)
+        
+        f.close()  
+    def scrape_data(self, delim, message):
+        steps = message.split(delim)
+        return steps
     
 
 if __name__ == "__main__":

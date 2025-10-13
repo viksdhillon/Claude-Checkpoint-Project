@@ -1,0 +1,13 @@
+{
+  "query": "Factor the polynomial 6x^2 + 11x - 10. Give me the answer like for example (3x + 5)(6x + 2). Please write each step out distinctively as STEP 1: ..., STEP 2: ..., etc. YOU *MUST* write it out in steps.",
+  "steps": [
+    {
+      "1": 1,
+      "response": "Here's the factoring of the polynomial 6x^2 + 11x - 10:"
+    },
+    {
+      "2": 2,
+      "response": "1: First, we need to find two numbers whose product is the constant term (-10) and whose sum is the coefficient of the middle term (11). These numbers are 10 and 1."
+    }
+  ]
+}

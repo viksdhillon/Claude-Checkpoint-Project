@@ -4,7 +4,8 @@ from checkpoint_structure import CheckpointADT
 from save_query import SaveQuery
 
 checkpoint = CheckpointADT()
-new_query = SaveQuery("checkpoint_save.json")
-new_query.prompt_and_save('Factor the polynomial 6x^2 + 11x - 10. Give me the answer like for example (3x + 5)(6x + 2). Please write each step out distinctively as STEP 1: ..., STEP 2: ..., etc', checkpoint)
+checkpoint.prompt_and_save('Factor the polynomial 6x^2 + 11x - 10. Give me the answer like for example (3x + 5)(6x + 2). Please write each step out distinctively as STEP 1: ..., STEP 2: ..., etc. YOU *MUST* write it out in steps.',"STEP")
 #print(checkpoint.get(1))
+print(checkpoint.toString())
+checkpoint.rollback_to(2)
 print(checkpoint.toString())

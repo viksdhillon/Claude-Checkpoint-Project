@@ -1,13 +1,4 @@
 {
-  "query": "Factor the polynomial 6x^2 + 11x - 10. Give me the answer like for example (3x + 5)(6x + 2). Please write each step out distinctively as STEP 1: ..., STEP 2: ..., etc. YOU *MUST* write it out in steps.",
-  "steps": [
-    {
-      "id": 2,
-      "response": " 1: Check if there are any common factors among the terms\nIn this case, we can see that all three terms have a factor of 1, so there are no common factors to eliminate.\n\n "
-    },
-    {
-      "id": 7,
-      "response": "This is not the right answer"
-    }
-  ]
+  "query": "",
+  "steps": []
 }

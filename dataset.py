@@ -15,7 +15,7 @@ test_problems = [
         "query": "Factor x^2 + 2x + 1, please write out each step. Do it in this format, STEP 1:... , STEP 2: ... , etc",
         "expected": "(x+1)(x+1)",
         "type": "polynomial"
-    }
+    },
     {
         "num": 3,
         "query": "Factor x^2 + 7x + 12, please write out each step. Do it in this format, STEP 1:... , STEP 2: ... , etc",

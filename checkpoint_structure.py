@@ -2,6 +2,7 @@ import datetime
 from ollama import chat
 from ollama import ChatResponse
 import json
+import os
 
 class Node:
     def __init__(self, node_id, query, response):
@@ -12,7 +13,11 @@ class Node:
         self.prev = None
     
 class CheckpointADT:
-    def __init__(self, log="checkpoint_save.json"):
+    def __init__(self, log=None):
+        # Default to checkpoint_save.json in the same directory as this file
+        if log is None:
+            script_dir = os.path.dirname(os.path.abspath(__file__))
+            log = os.path.join(script_dir, "checkpoint_save.json")
         self.head = None
         self.tail = None
         self.map = {}
@@ -90,7 +95,11 @@ class CheckpointADT:
             return False
         
         node.response = response
-        self.data["steps"][id]["response"] = response
+        # Find the step in the list by id and update it
+        for step in self.data["steps"]:
+            if step["id"] == id:
+                step["response"] = response
+                break
         self.update_json()
         return True
         
@@ -190,6 +199,15 @@ class CheckpointADT:
         return steps
     
     def update_json(self):
+        # Rebuild data from linked list to ensure consistency
+        self.data["steps"] = []
+        for node in self.traverse_forward():
+            self.data["steps"].append({
+                "id": node.id,
+                "query": node.query,
+                "response": node.response
+            })
+        
         with open(self.log, 'w') as f:
             json.dump(self.data, f, indent=2)
         f.close()
@@ -277,17 +295,3 @@ if __name__ == "__main__":
     print("=" * 60)
     print("✓ All core functionality tested")
     print("✓ Checkpoint system working correctly")
-
-
-        
-
-
-
-
-
-    
-
-        
-
-        
-        

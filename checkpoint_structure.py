@@ -1,6 +1,7 @@
 import datetime
 from ollama import chat
 from ollama import ChatResponse
+from judge import Judge
 import json
 import os
 
@@ -28,6 +29,7 @@ class CheckpointADT:
             "query": "",
             "steps": []
         }
+        self.judge = Judge()
     
     def append(self, query, response):
         self.node_counter +=1
@@ -166,10 +168,14 @@ class CheckpointADT:
         curr = self.head
         if curr is None:
             return "Empty checkpoint structure"
+        result = []
         while curr:
-            print(f'{curr.id}, ', end="")
-            curr = curr.next
-        
+           result.append(f"{curr.id}, {curr.response}")
+           curr = curr.next
+
+        output = " || ".join(result)
+        print(output)    
+        return output 
     
     #json formatting
     def prompt_and_save(self, query, delim):
@@ -212,6 +218,26 @@ class CheckpointADT:
             json.dump(self.data, f, indent=2)
         f.close()
 
+    
+    def router_judge(self, problem):
+        if problem is None:
+            if not self.head:
+                raise ValueError("router_judge: no problem provided and checkpoint list is empty.")
+            problem = self.head.query
+        solved_answer = self.tail.response if self.tail else None
+
+        judge_type = self.judge.classify(problem)
+        actual_answer = self.judge.solve(problem, judge_type)
+        answer = actual_answer['answer']
+        vq = self.judge.generate_verification(problem, answer, judge_type)
+        
+        # Return both verification question and the path selected
+        return {
+            'verification_question': vq,
+            'path': judge_type,
+            'path_name': self.judge.judges[judge_type]['name']
+        }
+    
 if __name__ == "__main__":
     """Comprehensive test harness"""
     print("=" * 60)

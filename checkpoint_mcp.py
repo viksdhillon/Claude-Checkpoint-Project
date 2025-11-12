@@ -98,6 +98,20 @@ async def handle_list_tools() -> list[Tool]:
                 "type": "object",
                 "properties": {}
             }
+        ),
+        Tool(
+            name="judge_router",
+            description="Used to generate verification questions",
+            inputSchema={
+                "type":"object",
+                "properties":{
+                    "problem": {
+                        "type": "string",
+                        "description": "The math problem to solve"
+                    }
+                },
+                "required": ["problem"]
+            }
         )
     ]
 
@@ -196,6 +210,19 @@ async def handle_call_tool(name: str, arguments: dict) -> list[TextContent]:
             text=f"Json has been updated!"
         )]
     
+    elif name == "judge_router":
+        problem = arguments.get("problem")
+        result = checkpoint.router_judge(problem)
+        
+        # Format the response to include path information
+        formatted_response = f"""=== JUDGE ROUTER RESULTS ===
+
+Selected Path: {result['path']} ({result['path_name']})
+
+Verification Question:
+{result['verification_question']}
+"""
+        return [TextContent(type="text", text=formatted_response)]
     else:
         raise ValueError(f"Unknown tool: {name}")
 
